@@ -1,31 +1,19 @@
-import requests
+import os
+from dotenv import load_dotenv
 import streamlit as st
+import google.generativeai as genai  # Import Gemini API
 
-# ✅ Define career-related keywords
-CAREER_KEYWORDS = ["job", "career", "work", "salary", "skills", "resume", "internship", 
-                   "data analyst", "software engineer", "certification", "promotion", 
-                   "freelance", "courses", "hiring", "recruitment"]
+# Load .env file
+load_dotenv()
 
-def is_career_related(query):
-    """Check if the query is related to careers"""
-    return any(keyword in query.lower() for keyword in CAREER_KEYWORDS)
+# Fetch API Key
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
-def get_career_advice(query):
-    """Fetch career advice from API if the query is career-related"""
-    if not is_career_related(query):
-        return "❌ Sorry, I can only provide career-related insights."
-    
-    api_url = f"https://api.example.com/career?query={query}"  # 🔹 Replace with real API
-    response = requests.get(api_url)
-    
-    if response.status_code == 200:
-        return response.json().get("answer", "No relevant career data found.")
-    
-    return "⚠️ API request failed. Try again later."
+if not GEMINI_API_KEY:
+    st.error("⚠️ Error: GEMINI_API_KEY not found! Set it in .env.")
+    st.stop()
 
-# 🔹 Streamlit UI
-st.title("Career Path Bot 🎯")
-question = st.text_input("Ask a career-related question:")
-if st.button("Ask"):
-    response = get_career_advice(question)
-    st.write(response)
+# Configure Gemini API
+genai.configure(api_key=GEMINI_API_KEY)
+
+st.write("✅ Gemini API Key Loaded Successfully!")
