@@ -1,12 +1,22 @@
-function askQuestion() {
-    let userInput = document.getElementById("user-input").value;
-    let responseElement = document.getElementById("response");
+const careerKeywords = ["job", "career", "salary", "skills", "internship", "promotion",
+    "certification", "resume", "hiring", "recruitment", "freelance"];
 
-    if (userInput.toLowerCase().includes("data analyst")) {
-        responseElement.innerHTML = "To become a Data Analyst, learn SQL, Python, Excel, and statistics.";
-    } else if (userInput.toLowerCase().includes("ai engineer")) {
-        responseElement.innerHTML = "AI Engineers need strong Python, ML, and AI model-building skills.";
-    } else {
-        responseElement.innerHTML = "I'm still learning! Try asking about Data Analyst or AI Engineer.";
-    }
+function isCareerRelated(question) {
+return careerKeywords.some(keyword => question.toLowerCase().includes(keyword));
 }
+
+async function getCareerAdvice(question) {
+if (!isCareerRelated(question)) {
+return "❌ Sorry, I can only provide career-related insights.";
+}
+
+let response = await fetch(`https://api.example.com/career?query=${question}`);
+let data = await response.json();
+return data.answer || "No relevant career data found.";
+}
+
+document.getElementById("askBtn").addEventListener("click", async function() {
+let question = document.getElementById("userInput").value;
+let responseText = await getCareerAdvice(question);
+document.getElementById("chatbotResponse").innerText = responseText;
+});
